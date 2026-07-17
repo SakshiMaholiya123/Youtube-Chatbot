@@ -8,20 +8,45 @@ from youtube_transcript_api._errors import (
 
 
 def extract_video_id(url: str) -> str:
-  
-    if "youtube.com" not in url and "youtu.be" not in url:
-        return url.strip()
+    """
+    Extract the YouTube video ID from various URL formats,
+    or return the input directly if it's already a video ID.
+    """
 
-    parsed_url = urlparse(url)
+    url = url.strip()
 
-    if parsed_url.netloc == "youtu.be":
-        return parsed_url.path.lstrip("/")
+    # Already looks like a video ID
+    if (
+        "youtube.com" not in url
+        and "youtu.be" not in url
+    ):
+        return url
 
-    if "youtube.com" in parsed_url.netloc:
-        query = parse_qs(parsed_url.query)
+    parsed = urlparse(url)
+
+    # https://youtu.be/VIDEO_ID
+    if "youtu.be" in parsed.netloc:
+        return parsed.path.lstrip("/")
+
+    # https://youtube.com/watch?v=VIDEO_ID
+    if "youtube.com" in parsed.netloc:
+
+        query = parse_qs(parsed.query)
 
         if "v" in query:
             return query["v"][0]
+
+        # https://youtube.com/shorts/VIDEO_ID
+        if "/shorts/" in parsed.path:
+            return parsed.path.split("/shorts/")[1]
+
+        # https://youtube.com/embed/VIDEO_ID
+        if "/embed/" in parsed.path:
+            return parsed.path.split("/embed/")[1]
+
+        # https://youtube.com/live/VIDEO_ID
+        if "/live/" in parsed.path:
+            return parsed.path.split("/live/")[1]
 
     raise ValueError("Invalid YouTube URL")
 

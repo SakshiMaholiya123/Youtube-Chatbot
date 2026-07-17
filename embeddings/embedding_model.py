@@ -1,4 +1,5 @@
 import os
+from functools import lru_cache
 
 from dotenv import load_dotenv
 from langchain_cohere import CohereEmbeddings
@@ -10,14 +11,15 @@ load_dotenv()
 COHERE_API_KEY = os.getenv("COHERE_API_KEY")
 
 
+@lru_cache(maxsize=1)
 def get_embedding_model() -> CohereEmbeddings:
-   
-    if not COHERE_API_KEY:
-        raise ValueError("COHERE_API_KEY not found in .env file")
 
-    embeddings = CohereEmbeddings(
+    print("Loading Cohere Embedding Model...")
+
+    if not COHERE_API_KEY:
+        raise ValueError("COHERE_API_KEY not found in .env")
+
+    return CohereEmbeddings(
         model=EMBEDDING_MODEL,
         cohere_api_key=COHERE_API_KEY,
     )
-
-    return embeddings

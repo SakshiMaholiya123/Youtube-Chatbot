@@ -6,23 +6,21 @@ from chains.chain import get_rag_chain
 
 
 def process_video(url: str):
-    
     # Document ingestion
     documents = ingest_document(url)
 
-    # Text splitting
+    # Split transcript
     chunks = split_documents(documents)
 
-    # Create vector store
-    vectorstore = create_vectorstore(chunks)
+    # Create ChromaDB
+    create_vectorstore(chunks)
 
-    return vectorstore
-
-
-def ask_question(question: str):
-
+    # Build RAG chain once
     rag_chain = get_rag_chain()
 
-    response = rag_chain.invoke(question)
+    return rag_chain
 
-    return response
+
+def ask_question(rag_chain, question: str):
+
+    return rag_chain.invoke(question)
