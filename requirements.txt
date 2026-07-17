@@ -1,0 +1,12 @@
+langchain
+langchain-core
+langchain-community
+langchain-groq
+langchain-mistralai
+chromadb
+youtube-transcript-api
+pytube
+python-dotenv
+streamlit
+tiktoken
+requests
